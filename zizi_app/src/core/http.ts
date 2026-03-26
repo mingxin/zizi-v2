@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/auth/store'
 
 const http = axios.create({
   // VITE_API_BASE_URL is set during build time via GitHub Actions
+  // API URL: https://zizi-api.onrender.com/api
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
   timeout: 60000,
   headers: {

@@ -5,6 +5,9 @@ const http = axios.create({
   // VITE_API_BASE_URL is set during build time via GitHub Actions
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
   timeout: 60000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 })
 
 // 请求拦截器：注入 Token + 用户自定义 API Key

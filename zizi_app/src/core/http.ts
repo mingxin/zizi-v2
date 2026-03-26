@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/features/auth/store'
 
 const http = axios.create({
+  // VITE_API_BASE_URL is set during build time via GitHub Actions
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
   timeout: 60000,
 })

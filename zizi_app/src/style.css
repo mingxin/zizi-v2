@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ui_design_spec.md Section 7: Default filled icon style */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+/* ui_design_spec.md Section 8: Page background glow (opt-in via class) */
+.page-glow::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 80% 10%, rgba(238,205,43,0.08) 0%, transparent 40%),
+    radial-gradient(circle at 20% 90%, rgba(238,205,43,0.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+@layer base {
+  html {
+    min-height: 100dvh;
+  }
+
+  body {
+    @apply bg-bg-light dark:bg-bg-dark font-display text-slate-900 dark:text-slate-100 antialiased;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  #app {
+    @apply relative flex flex-col min-h-dvh max-w-md mx-auto overflow-hidden;
+  }
+}

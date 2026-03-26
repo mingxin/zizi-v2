@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+
+# Prisma
+prisma/migrations/
+
+# Backend specific
+backend/dist/
+backend/node_modules/
+
+# Frontend specific
+zizi_app/dist/
+zizi_app/node_modules/
+
+# Server specific
+zizi_server/backend/dist/
+zizi_server/backend/node_modules/

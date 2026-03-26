@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  phone      String      @unique
+  password   String
+  role       Role        @default(USER)
+  isBanned   Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  books      Book[]
+  photoWords PhotoWord[]
+}
+
+model Book {
+  id        Int        @id @default(autoincrement())
+  title     String
+  coverUrl  String
+  createdAt DateTime   @default(now())
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id])
+  pages     BookPage[]
+}
+
+model BookPage {
+  id       Int    @id @default(autoincrement())
+  pageNum  Int
+  imageUrl String
+  audioUrl String @default("")
+  story    String @default("")
+  bookId   Int
+  book     Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+}
+
+model PhotoWord {
+  id          Int      @id @default(autoincrement())
+  imageUrl    String
+  word        String
+  explanation String
+  vocabLevel  Int
+  createdAt   DateTime @default(now())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model AppConfig {
+  key   String @id
+  value String
+}

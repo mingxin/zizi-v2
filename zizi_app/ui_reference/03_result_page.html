@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eecd2b",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#221f10",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
+<div class="relative flex h-screen w-full flex-col max-w-md mx-auto overflow-hidden">
+<!-- Top Navigation -->
+<div class="absolute top-6 left-6 z-10">
+<button class="flex items-center justify-center size-12 bg-white/90 dark:bg-background-dark/80 backdrop-blur-sm rounded-full shadow-lg border-2 border-primary/20 text-slate-800 dark:text-slate-200">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+</div>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col px-6 pt-20 pb-6 gap-4 overflow-y-auto">
+<!-- Photo Display -->
+<div class="w-full aspect-square rounded-xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Extremely cute orange cat curled up on a sofa" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDS611yJWX-plep0RWEEYUsiQQ6KQkbT5jt5LSwXTrRh7_h-G-Ehwts_jYdwqNNsZJaVndL3wfgYNkqzyhahwBQODSHNNHTqeTTlh0aFj2NSybMT04GzVZE-hMIMOb8qwKIAbbegm7q5VzV3D-wE-FFrn7nbQFS-nJSqdIWtGUO-R8ctD5MTTZ7X9K8-HDDFrQgrOWXhV3ueTUlwM1o8gM6smvi9mlYc1BwfbihIdkS5WzD8zLgc4vcL5p8j2Axn5z_R_AJ9SWJrM8");'>
+</div>
+</div>
+<!-- Character Flashcard -->
+<div class="mx-12 py-4 px-6 bg-white dark:bg-slate-800 rounded-xl shadow-md border-b-4 border-primary/30 flex flex-col items-center justify-center text-center">
+<h1 class="text-7xl font-bold text-slate-900 dark:text-white leading-none mb-2">猫</h1>
+<p class="text-xl font-medium text-primary tracking-wide">(māo)</p>
+</div>
+<!-- AI Explanation Box -->
+<button class="w-full text-left bg-primary/20 dark:bg-primary/10 rounded-xl p-5 border-2 border-primary/30 active:scale-95 transition-transform">
+<div class="flex gap-4 items-start">
+<div class="flex-1">
+<p class="text-lg font-medium leading-relaxed text-slate-800 dark:text-slate-200">
+                            哇！这是一只非常可爱的橘色小猫咪，它正蜷缩在柔软的沙发上打呼噜呢。你听，是不是很可爱？
+                        </p>
+<div class="mt-2 flex items-center gap-1 text-primary font-bold text-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">volume_up</span>
+<span>点击重听</span>
+</div>
+</div>
+<div class="flex items-center justify-center p-2 text-primary/60">
+<span class="material-symbols-outlined text-4xl">play_circle</span>
+</div>
+</div>
+</button>
+</div>
+<!-- Bottom Action Button -->
+<div class="px-6 py-8 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent">
+<button class="w-full h-16 rounded-full bg-gradient-to-r from-primary to-[#f59e0b] shadow-xl shadow-primary/30 flex items-center justify-center gap-3 text-white text-xl font-bold active:scale-95 transition-transform border-b-4 border-black/10">
+<span class="material-symbols-outlined text-2xl">auto_awesome</span>
+<span>继续玩</span>
+</button>
+</div>
+</div>
+</body></html>

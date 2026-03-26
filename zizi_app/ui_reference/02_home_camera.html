@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zizi App - Main Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Varela+Round&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#eecd2b",
+              "background-light": "#f8f8f6",
+              "background-dark": "#221f10",
+              "neutral-100": "#f5f4f0",
+              "neutral-200": "#e5e3db",
+              "neutral-800": "#3b3624",
+              "neutral-900": "#2c281b",
+            },
+            fontFamily: {
+              "display": ["Be Vietnam Pro", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            boxShadow: {
+              'bubbly': '0 10px 25px -5px rgba(238, 205, 43, 0.4), 0 8px 10px -6px rgba(238, 205, 43, 0.2)',
+              'bubbly-inset': 'inset 0 -5px 15px rgba(0,0,0,0.1), 0 10px 25px -5px rgba(238, 205, 43, 0.5)',
+              'float': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-neutral-900 dark:text-neutral-100 min-h-screen flex flex-col items-center justify-center m-0 p-0 overflow-hidden">
+<!-- Mobile App Container -->
+<div class="relative w-full max-w-md h-[100dvh] bg-background-light dark:bg-background-dark overflow-hidden flex flex-col shadow-2xl mx-auto sm:rounded-[3rem] sm:h-[850px] sm:my-8 border-4 border-neutral-200 dark:border-neutral-800">
+<!-- Top Bar -->
+<div class="flex justify-end p-6 relative z-10">
+<button class="w-12 h-12 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-float hover:scale-105 transition-transform active:scale-95 border-2 border-neutral-100 dark:border-neutral-700" style="">
+<span class="material-symbols-outlined text-neutral-800 dark:text-neutral-200 text-2xl" style="">settings</span>
+</button>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col items-center justify-center px-6 -mt-12">
+<!-- Big Eye Camera Button -->
+<button class="relative group cursor-pointer w-56 h-56 rounded-full bg-gradient-to-br from-primary via-[#fbbf24] to-[#f59e0b] shadow-bubbly-inset flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 border-8 border-white dark:border-neutral-800" style="">
+<!-- Inner Lens Shadow -->
+<div class="absolute inset-2 rounded-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+<!-- Inner Lens Details -->
+<div class="w-32 h-32 rounded-full bg-white dark:bg-neutral-900 shadow-inner flex items-center justify-center border-4 border-primary/30 relative overflow-hidden">
+<div class="w-20 h-20 rounded-full bg-neutral-900 dark:bg-neutral-800 relative">
+<!-- Cute highlights -->
+<div class="absolute top-3 left-4 w-6 h-6 rounded-full bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+<div class="absolute top-8 left-12 w-2 h-2 rounded-full bg-white/80"></div>
+</div>
+</div>
+</button>
+<!-- Playful Text -->
+<div class="mt-12 text-center">
+<h1 class="text-3xl font-bold tracking-wide mb-2 drop-shadow-sm text-4xl" style="font-family: 'Varela Round', sans-serif; color: #8B4513;">
+                    拍图识字</h1>
+<p class="text-sm font-medium" style="font-family: 'Varela Round', sans-serif; color: #B8860B;">发现身边的奇妙世界
+                </p>
+</div>
+</div>
+<!-- Bottom Tab Bar -->
+<div class="p-6 pb-8 relative z-10 w-full">
+<div class="bg-white dark:bg-neutral-800 rounded-[2rem] shadow-float p-2 flex justify-between items-center border border-neutral-100 dark:border-neutral-700">
+<!-- Active Tab: Camera -->
+<a class="flex-1 flex flex-col items-center justify-center py-3 bg-primary/10 dark:bg-primary/20 rounded-[1.5rem] transition-colors" href="#" style="">
+<div class="w-12 h-10 rounded-full bg-primary flex items-center justify-center shadow-[0_4px_10px_-2px_rgba(238,205,43,0.5)] mb-1">
+<span class="material-symbols-outlined text-white text-[28px]" style='font-variation-settings: "FILL" 1;'>photo_camera</span>
+</div>
+<span class="text-neutral-900 dark:text-white text-sm font-bold tracking-wider" style="">拍图</span>
+</a>
+<!-- Inactive Tab: Books -->
+<a class="flex-1 flex flex-col items-center justify-center py-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-[1.5rem] transition-colors group" href="#" style="">
+<div class="w-12 h-10 rounded-full flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-neutral-400 dark:text-neutral-500 text-[28px]" style='font-variation-settings: "FILL" 0;'>menu_book</span>
+</div>
+<span class="text-neutral-400 dark:text-neutral-500 text-sm font-bold tracking-wider group-hover:text-neutral-700 dark:group-hover:text-neutral-300" style="">绘本</span>
+</a>
+</div>
+</div>
+</div>
+</body></html>

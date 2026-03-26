@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;family=Noto+Sans+SC:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eecd2b",
+                        "primary-orange": "#f59e0b",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#221f10",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "Noto Sans SC", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .doodle-bg {
+            background-image: radial-gradient(circle at 20% 30%, rgba(238, 205, 43, 0.05) 0%, transparent 10%),
+                              radial-gradient(circle at 80% 10%, rgba(238, 205, 43, 0.05) 0%, transparent 10%),
+                              radial-gradient(circle at 50% 80%, rgba(238, 205, 43, 0.05) 0%, transparent 15%);
+        }
+        .bubbly-shadow {
+            box-shadow: 0 10px 25px -5px rgba(238, 205, 43, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden min-h-screen">
+<div class="relative w-full min-h-screen flex flex-col doodle-bg">
+<!-- Header -->
+<header class="relative flex items-center justify-center px-4 py-6">
+<button class="absolute left-4 w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100">绘本</h1>
+</header>
+<!-- Top Tabs -->
+<div class="px-6 py-4">
+<div class="flex bg-primary/10 dark:bg-primary/5 p-1.5 rounded-full gap-1">
+<a class="flex-1 flex items-center justify-center py-3 px-6 bg-primary dark:bg-primary rounded-full text-slate-900 font-bold shadow-sm" href="#">
+                    我的绘本
+                </a>
+<a class="flex-1 flex items-center justify-center py-3 px-6 text-slate-500 dark:text-slate-400 font-bold" href="#">
+                    所有绘本
+                </a>
+</div>
+</div>
+<!-- Main Content (Empty State) -->
+<main class="flex-1 flex flex-col items-center justify-center px-8 pb-12 text-center">
+<!-- Hero Illustration -->
+<div class="relative w-full max-w-sm aspect-square mb-8 flex items-center justify-center">
+<!-- Background Glow -->
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-3xl opacity-50"></div>
+<!-- Placeholder for Whimsical Illustration -->
+<div class="relative z-10 w-full h-full flex items-center justify-center">
+<div class="w-64 h-64 bg-slate-200 dark:bg-slate-700 rounded-xl overflow-hidden shadow-xl" data-alt="Chubby friendly dragon looking at an empty magical bookshelf with sparkles">
+<div class="w-full h-full bg-gradient-to-br from-primary/30 to-primary-orange/20 flex flex-col items-center justify-center p-6">
+<span class="material-symbols-outlined text-8xl text-primary-orange/60">auto_stories</span>
+<div class="mt-4 flex gap-2">
+<span class="material-symbols-outlined text-primary-orange/40">auto_awesome</span>
+<span class="material-symbols-outlined text-primary-orange/40 text-sm">auto_awesome</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute top-10 right-10 text-primary-orange opacity-40">
+<span class="material-symbols-outlined text-3xl">star</span>
+</div>
+<div class="absolute bottom-20 left-10 text-primary opacity-40">
+<span class="material-symbols-outlined text-4xl">cloud</span>
+</div>
+</div>
+<!-- Message -->
+<div class="space-y-3 mb-12">
+<h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">你的书架还是空的哦～</h2>
+<p class="text-slate-500 dark:text-slate-400 font-medium">快来开启一段神奇的创作旅程吧</p>
+</div>
+<!-- CTA Button -->
+<button class="group relative w-full max-w-xs flex items-center justify-center gap-3 py-5 px-8 bg-gradient-to-r from-primary to-primary-orange rounded-full text-slate-900 font-bold text-lg bubbly-shadow hover:scale-105 transition-transform">
+<span class="material-symbols-outlined font-bold text-2xl">photo_camera</span>
+<span>去拍摄一本吧</span>
+<!-- Pulse Effect (Simulated via overlay) -->
+<div class="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+</button>
+</main>
+<!-- Background Doodles (Absolute Positioned) -->
+<div class="fixed pointer-events-none inset-0 z-[-1] overflow-hidden">
+<span class="material-symbols-outlined absolute top-1/4 left-[5%] text-slate-200 dark:text-slate-800 text-4xl">favorite</span>
+<span class="material-symbols-outlined absolute bottom-1/4 right-[8%] text-slate-200 dark:text-slate-800 text-6xl">draw</span>
+<span class="material-symbols-outlined absolute top-[60%] left-[10%] text-slate-200 dark:text-slate-800 text-3xl">pets</span>
+<span class="material-symbols-outlined absolute top-20 right-[15%] text-slate-200 dark:text-slate-800 text-5xl">auto_awesome</span>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,30 @@
+# Render Blueprint Configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: zizi-backend
+    runtime: node
+    region: singapore
+    buildCommand: cd zizi_server/backend && npm install && npx prisma generate && npx prisma db push && npm run build
+    startCommand: cd zizi_server/backend && npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DASHSCOPE_API_KEY
+        sync: false
+      - key: ALIYUN_OSS_ACCESS_KEY_ID
+        sync: false
+      - key: ALIYUN_OSS_ACCESS_KEY_SECRET
+        sync: false
+      - key: ALIYUN_OSS_BUCKET
+        sync: false
+      - key: ALIYUN_OSS_REGION
+        sync: false
+      - key: ALIYUN_STS_ROLE_ARN
+        sync: false

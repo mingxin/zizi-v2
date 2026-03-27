@@ -68,12 +68,27 @@ jobs:
 
     steps:
       - name: Deploy to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
-
-      - name: Notify deployment status
         run: |
-          echo "🚀 Backend deployed to Render!"
-          echo "Service ID: ${{ secrets.RENDER_SERVICE_ID }}"
+          echo "Triggering Render deployment..."
+
+          RESPONSE=$(curl -s -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "clearCache": "do_not_clear"
+            }')
+
+          echo "Response: $RESPONSE"
+
+          if echo "$RESPONSE" | grep -q '"id"'; then
+            echo "✅ Deployment triggered successfully!"
+            DEPLOY_ID=$(echo "$RESPONSE" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+            echo "Deploy ID: $DEPLOY_ID"
+            echo "View deployment at: https://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID }}"
+          else
+            echo "❌ Deployment failed!"
+            echo "$RESPONSE"
+            exit 1
+          fi

@@ -48,6 +48,9 @@ jobs:
 
       - name: Deploy to Vercel
         run: |
+          mkdir -p .vercel/output/static
+          cp -r dist/* .vercel/output/static/
+          echo '{"version":3,"routes":[{"handle":"filesystem"},{"src":"/(.*)","dest":"/index.html"}]}' > .vercel/output/config.json
           npx vercel --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: ./zizi_app
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'

@@ -12,6 +12,7 @@ on:
       - main
     paths:
       - 'zizi_app/**'
+  workflow_dispatch:
 
 jobs:
   deploy:

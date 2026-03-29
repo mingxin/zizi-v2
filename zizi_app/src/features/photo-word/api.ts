@@ -19,7 +19,7 @@ export async function analyzeImage(
 ): Promise<AnalyzeResult> {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('vocabLevel', String(vocabLevel.toString())
+  formData.append('vocabLevel', String(vocabLevel))
 
   const { data } = await http.post<AnalyzeResult>('/photo-word/analyze', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

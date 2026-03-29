@@ -1,7 +1,5 @@
 <template>
-  <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
-    <AppHeader title="我的绘本" :show-settings="true" @settings="showSettings = true" />
-
+  <div class="relative flex flex-col h-full overflow-hidden">
     <!-- Has books -->
     <main v-if="books.length > 0" class="flex-1 overflow-y-auto px-4 pt-2 pb-4">
       <div class="grid grid-cols-2 gap-4">
@@ -58,29 +56,23 @@
     </main>
 
     <!-- Background decorations -->
-    <div class="fixed pointer-events-none inset-0 z-[-1] overflow-hidden">
+    <div class="absolute pointer-events-none inset-0 -z-10 overflow-hidden">
       <span class="material-symbols-outlined absolute top-1/4 left-[5%] text-slate-200 dark:text-slate-800 text-4xl">favorite</span>
       <span class="material-symbols-outlined absolute bottom-1/4 right-[8%] text-slate-200 dark:text-slate-800 text-6xl">draw</span>
       <span class="material-symbols-outlined absolute top-[60%] left-[10%] text-slate-200 dark:text-slate-800 text-3xl">pets</span>
     </div>
-
-    <BottomTab />
-    <SettingsDrawer v-model="showSettings" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { AppHeader, BottomTab } from '@/shared/components'
-import SettingsDrawer from '@/features/settings/components/SettingsDrawer.vue'
 import { useBookStore } from '../store'
 import { storeToRefs } from 'pinia'
 
 const router       = useRouter()
 const bookStore    = useBookStore()
 const { books }    = storeToRefs(bookStore)
-const showSettings = ref(false)
 
 onMounted(() => bookStore.loadBooks())
 </script>

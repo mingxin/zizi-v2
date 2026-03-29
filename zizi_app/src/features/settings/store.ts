@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
 export type VocabLevel = 1 | 2 | 3 | 4
-export type TtsVoice = 'Serena' | 'Maia' | 'Rocky' | 'Kiki' | 'browser'
+export type TtsVoice = 'Maia' | 'Kai' | 'Kiki' | 'Rocky' | 'browser'
 
 const KEYS = {
   vocabLevel:   'zizi_vocab_level',
@@ -13,7 +13,7 @@ const KEYS = {
 
 export const useSettingsStore = defineStore('settings', () => {
   const vocabLevel   = ref<VocabLevel>((Number(localStorage.getItem(KEYS.vocabLevel)) || 1) as VocabLevel)
-  const ttsVoice     = ref<TtsVoice>((localStorage.getItem(KEYS.ttsVoice) as TtsVoice) || 'Serena')
+  const ttsVoice     = ref<TtsVoice>((localStorage.getItem(KEYS.ttsVoice) as TtsVoice) || 'Maia')
   const customLlmKey = ref<string>(localStorage.getItem(KEYS.customLlmKey) || '')
   const customTtsKey = ref<string>(localStorage.getItem(KEYS.customTtsKey) || '')
 

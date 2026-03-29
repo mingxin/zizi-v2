@@ -1,61 +1,58 @@
 <template>
-  <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
-    <!-- 顶部导航 -->
-    <AppHeader :show-back="true" @back="handleBack" />
-
+  <div class="relative flex flex-col h-full overflow-hidden">
     <template v-if="result">
-      <!-- 图片区域（正方形裁剪）-->
-      <div class="px-6 pt-2">
-        <div class="w-full aspect-square rounded-3xl overflow-hidden shadow-float bg-slate-100">
-          <img
-            :src="store.previewUrl || result.imageUrl"
-            alt="拍摄的图片"
-            class="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-
-      <!-- 内容区：可滚动 -->
-      <div class="flex-1 overflow-y-auto px-6 pt-5 pb-4 space-y-4">
-        <!-- 核心单字大卡片 -->
-        <button
-          @click="playWord"
-          :class="[
-            'w-full rounded-3xl p-6 flex items-center justify-between shadow-bubbly transition-all duration-300 active:scale-95',
-            playingWord ? 'bg-primary' : 'bg-primary/20'
-          ]"
-        >
-          <span class="text-7xl font-black text-slate-900">{{ result.word }}</span>
-          <div class="flex flex-col items-center gap-1">
-            <div :class="['size-16 rounded-full flex items-center justify-center transition-all duration-300', playingWord ? 'bg-slate-900' : 'bg-primary']">
-              <span class="material-symbols-outlined text-3xl" :class="playingWord ? 'text-primary' : 'text-slate-900'">
-                {{ playingWord ? 'volume_up' : 'play_arrow' }}
-              </span>
-            </div>
-            <span class="text-xs font-bold text-slate-600">{{ playingWord ? '播放中' : '点击发音' }}</span>
+      <!-- 整体滚动区域 -->
+      <div class="flex-1 overflow-y-auto">
+        <div class="px-6 pt-2 pb-4 space-y-3">
+          <!-- 图片区域 (75% width) -->
+          <div class="w-3/4 mx-auto aspect-square rounded-3xl overflow-hidden shadow-float bg-slate-100">
+            <img
+              :src="store.previewUrl || result.imageUrl"
+              alt="拍摄的图片"
+              class="w-full h-full object-cover"
+            />
           </div>
-        </button>
 
-        <!-- 解析文本卡片 -->
-        <button
-          @click="playText"
-          class="w-full bg-surface dark:bg-white/5 rounded-3xl p-5 shadow-float text-left transition-all duration-300 active:scale-95"
-        >
-          <div class="flex gap-4 items-start">
-            <div class="flex-1">
-              <p class="text-lg font-medium leading-relaxed text-slate-800 dark:text-slate-200">
-                {{ result.explanation }}
-              </p>
-              <div class="mt-2 flex items-center gap-1 text-primary font-bold text-sm tracking-wider">
-                <span class="material-symbols-outlined text-sm">volume_up</span>
-                <span>{{ playingText ? '播放中...' : '点击重听' }}</span>
+          <!-- 核心单字大卡片 -->
+          <button
+            @click="playWord"
+            :class="[
+              'w-full rounded-3xl px-4 py-3 flex items-center justify-between shadow-bubbly transition-all duration-300 active:scale-95',
+              playingWord ? 'bg-primary' : 'bg-primary/20'
+            ]"
+          >
+            <span class="text-4xl font-black text-slate-900">{{ result.word }}</span>
+            <div class="flex flex-col items-center gap-0.5">
+              <div :class="['size-10 rounded-full flex items-center justify-center transition-all duration-300', playingWord ? 'bg-slate-900' : 'bg-primary']">
+                <span class="material-symbols-outlined text-xl" :class="playingWord ? 'text-primary' : 'text-slate-900'">
+                  {{ playingWord ? 'volume_up' : 'play_arrow' }}
+                </span>
+              </div>
+              <span class="text-[9px] font-bold text-slate-600">{{ playingWord ? '播放中' : '点击发音' }}</span>
+            </div>
+          </button>
+
+          <!-- 解析文本卡片 -->
+          <button
+            @click="playText"
+            class="w-full bg-surface dark:bg-white/5 rounded-3xl px-5 py-[18px] shadow-float text-left transition-all duration-300 active:scale-95"
+          >
+            <div class="flex gap-3 items-start">
+              <div class="flex-1">
+                <p class="text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200">
+                  {{ result.explanation }}
+                </p>
+                <div class="mt-2 flex items-center gap-1 text-primary font-bold text-sm tracking-wider">
+                  <span class="material-symbols-outlined text-sm">volume_up</span>
+                  <span>{{ playingText ? '播放中...' : '点击重听' }}</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-center p-1.5 text-primary/60">
+                <span class="material-symbols-outlined text-[34px]">play_circle</span>
               </div>
             </div>
-            <div class="flex items-center justify-center p-2 text-primary/60">
-              <span class="material-symbols-outlined text-4xl">play_circle</span>
-            </div>
-          </div>
-        </button>
+          </button>
+        </div>
       </div>
 
       <!-- 底部：继续玩按钮 -->
@@ -74,35 +71,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { AppHeader, PrimaryButton } from '@/shared/components'
-import { usePhotoWordStore } from '../store'
-import { playAudio } from '@/shared/utils/tts'
+import { storeToRefs } from 'pinia'
+import { PrimaryButton } from '@/shared/components'
+import { usePhotoWord } from '../store'
+import { playAudio, stopAudio } from '@/shared/utils/tts'
 
 const router = useRouter()
-const store  = usePhotoWordStore()
-const result = store.result
+const store  = usePhotoWord()
+
+// 立即恢复 sessionStorage（在 setup 阶段，早于首次渲染）
+store.restoreFromSession()
+
+// storeToRefs 保持响应性，避免解构丢失响应
+const { result } = storeToRefs(store)
 
 const playingWord = ref(false)
 const playingText = ref(false)
 
-// 进入结果页自动播放解析文本
-onMounted(() => {
-  if (result) playText()
-})
-
 async function playWord() {
-  if (!result || playingWord.value) return
+  if (!result.value) return
+  if (playingWord.value) { stopAudio(); playingWord.value = false; return }
+  playingText.value = false
   playingWord.value = true
-  await playAudio(result.wordAudioUrl, result.word)
+  await playAudio(result.value.wordAudioUrl, result.value.word)
   playingWord.value = false
 }
 
 async function playText() {
-  if (!result || playingText.value) return
+  if (!result.value) return
+  if (playingText.value) { stopAudio(); playingText.value = false; return }
+  playingWord.value = false
   playingText.value = true
-  await playAudio(result.textAudioUrl, result.explanation)
+  await playAudio(result.value.textAudioUrl, result.value.explanation)
   playingText.value = false
 }
 

@@ -1,7 +1,5 @@
 <template>
-  <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
-    <AppHeader title="拍摄绘本" :show-back="true" @back="handleBack" />
-
+  <div class="relative flex flex-col h-full overflow-hidden">
     <!-- Viewfinder area -->
     <main class="flex-1 flex flex-col items-center justify-center px-6 gap-6">
       <!-- Thumbnail strip of captured pages -->
@@ -95,7 +93,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { AppHeader } from '@/shared/components'
 import { useBookStore } from '../store'
 
 const MAX_PAGES = 20

@@ -63,7 +63,7 @@
                 <button
                   v-for="voice in voices"
                   :key="voice.id"
-                  @click="form.ttsVoice = voice.id"
+                  @click="form.ttsVoice = voice.id; previewVoice(voice.id)"
                   :class="[
                     'flex items-center gap-3 p-4 rounded-2xl border-b-4 transition-all duration-300 active:scale-95 text-left',
                     form.ttsVoice === voice.id
@@ -136,6 +136,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import { useSettingsStore, type VocabLevel, type TtsVoice } from '../store'
+import { previewVoice } from '@/shared/utils/tts'
 
 const props = defineProps<{ modelValue: boolean }>()
 const emit  = defineEmits<{ 'update:modelValue': [boolean] }>()
@@ -150,11 +151,11 @@ const levelLabels: Record<VocabLevel, string> = {
 }
 
 const voices: { id: TtsVoice; label: string; desc: string; icon: string }[] = [
-  { id: 'Serena', label: 'Serena',  desc: '温柔女声，适合睡前故事',   icon: 'self_improvement' },
-  { id: 'Maia',   label: 'Maia',    desc: '活泼女声，适合互动识字',   icon: 'mood' },
-  { id: 'Rocky',  label: 'Rocky',   desc: '沉稳男声，适合绘本旁白',   icon: 'record_voice_over' },
-  { id: 'Kiki',   label: 'Kiki',    desc: '元气童声，儿童最爱',       icon: 'child_care' },
-  { id: 'browser', label: '系统默认', desc: '使用浏览器内置语音（离线可用）', icon: 'speaker' },
+  { id: 'Maia',   label: 'Maia · 四月',   desc: '知性与温柔的碰撞（女声）',       icon: 'self_improvement' },
+  { id: 'Kai',    label: 'Kai · 凯',      desc: '耳朵的一场SPA（男声）',           icon: 'record_voice_over' },
+  { id: 'Kiki',   label: 'Kiki · 阿清',   desc: '甜美的港妹闺蜜（粤语女声）',     icon: 'mood' },
+  { id: 'Rocky',  label: 'Rocky · 阿强',  desc: '幽默风趣在线陪聊（粤语男声）',   icon: 'sentiment_satisfied' },
+  { id: 'browser', label: '系统默认',       desc: '使用浏览器内置语音（离线可用）', icon: 'speaker' },
 ]
 
 const form = reactive<{

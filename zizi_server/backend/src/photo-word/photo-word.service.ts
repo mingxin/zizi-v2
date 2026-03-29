@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
 import { AnalyzeDto } from './dto/analyze.dto';
 import { matchVocabulary } from './vocabularies';
 
+const PREVIEW_DIR = path.resolve(process.cwd(), 'uploads', 'previews');
+const PREVIEW_TEXT = '小朋友，你好啊';
+
 const DASHSCOPE_VISION_URL =
   'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 const DASHSCOPE_TTS_URL =
-  'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-2-audio/synthesis';
+  'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 
 @Injectable()
 export class PhotoWordService {
@@ -21,6 +26,49 @@ export class PhotoWordService {
     return customKey || process.env.DASHSCOPE_API_KEY || '';
   }
 
+  /**
+   * 获取音色预览音频 URL；首次请求时调用 DashScope 生成并缓存
+   */
+  async getVoicePreview(voice: string, customTtsKey?: string): Promise<string> {
+    const filePath = path.join(PREVIEW_DIR, `${voice}.mp3`);
+    if (fs.existsSync(filePath)) {
+      return `/api/static/previews/${voice}.mp3`;
+    }
+
+    const ttsKey = this.resolveKey(customTtsKey);
+    const buffer = await this.callTts(PREVIEW_TEXT, voice, ttsKey);
+
+    if (!fs.existsSync(PREVIEW_DIR)) {
+      fs.mkdirSync(PREVIEW_DIR, { recursive: true });
+    }
+    fs.writeFileSync(filePath, buffer);
+    return `/api/static/previews/${voice}.mp3`;
+  }
+
+  private async callTts(text: string, voice: string, apiKey: string): Promise<Buffer> {
+    const resp = await axios.post(
+      DASHSCOPE_TTS_URL,
+      {
+        model: 'qwen3-tts-flash',
+        input: { text, voice, language_type: 'Chinese' },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    const audioUrl = resp.data?.output?.audio?.url;
+    if (!audioUrl) {
+      throw new Error('DashScope TTS 未返回音频 URL');
+    }
+
+    const audioResp = await axios.get(audioUrl, { responseType: 'arraybuffer' });
+    return Buffer.from(audioResp.data as ArrayBuffer);
+  }
+
   async analyze(
     dto: AnalyzeDto,
     userId: number,
@@ -31,7 +79,7 @@ export class PhotoWordService {
   ) {
     const llmKey = this.resolveKey(customLlmKey);
     const ttsKey = this.resolveKey(customTtsKey);
-    const voice = ttsVoice || 'Serena';
+    const voice = ttsVoice || 'Maia';
 
     // 将图片转为 base64 data URL（供 LLM 视觉模型使用）
     const base64Image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
@@ -197,24 +245,10 @@ export class PhotoWordService {
   ): Promise<string> {
     if (!text) return '';
     try {
-      const resp = await axios.post(
-        DASHSCOPE_TTS_URL,
-        {
-          model: 'qwen3-tts-flash',
-          input: { text },
-          parameters: { voice, format: 'mp3' },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-        },
-      );
-      const buffer = Buffer.from(resp.data as ArrayBuffer);
+      const buffer = await this.callTts(text, voice, apiKey);
       return this.uploadService.saveFile(buffer, 'audio', 'mp3', tag);
-    } catch {
+    } catch (err) {
+      console.error('[TTS] 合成失败:', (err as any)?.response?.data?.toString() ?? (err as Error).message);
       return '';
     }
   }

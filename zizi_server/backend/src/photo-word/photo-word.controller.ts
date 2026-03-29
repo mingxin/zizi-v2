@@ -1,7 +1,9 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
+  Param,
   UseGuards,
   Req,
   UseInterceptors,
@@ -45,5 +47,15 @@ export class PhotoWordController {
       customTtsKey,
       ttsVoice,
     );
+  }
+
+  @Get('voice-preview/:voice')
+  async getVoicePreview(
+    @Param('voice') voice: string,
+    @Req() req: Request & { user: any },
+  ) {
+    const customTtsKey = req.headers['x-custom-tts-key'] as string | undefined;
+    const url = await this.service.getVoicePreview(voice, customTtsKey);
+    return { url };
   }
 }

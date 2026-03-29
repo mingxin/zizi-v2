@@ -1,10 +1,7 @@
 <template>
-  <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
-    <!-- 顶部导航 -->
-    <AppHeader :show-settings="true" @settings="showSettings = true" />
-
+  <div class="relative flex flex-col h-full overflow-hidden">
     <!-- 主体：取景框区域 -->
-    <main class="flex-1 flex flex-col items-center justify-center px-6 gap-8">
+    <main class="flex-1 flex flex-col items-center justify-center px-6">
       <!-- 取景框装饰 -->
       <div class="relative w-full max-w-xs aspect-square">
         <!-- 外圈光晕 -->
@@ -16,18 +13,44 @@
           <div class="absolute top-3 right-3 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
           <div class="absolute bottom-3 left-3 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
           <div class="absolute bottom-3 right-3 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
-          <!-- 提示文字 -->
-          <div class="flex flex-col items-center gap-2 text-center px-8">
-            <span class="material-symbols-outlined text-5xl text-primary/60">photo_camera</span>
-            <p class="text-sm font-medium text-slate-400">对准想认识的字或物品</p>
+
+          <!-- 默认：可爱眼睛 + 提示文字 -->
+          <div v-if="store.state === 'idle'" class="flex flex-col items-center gap-3 text-center px-8">
+            <div class="cute-eye">
+              <div class="cute-eye__sclera">
+                <div class="cute-eye__iris">
+                  <div class="cute-eye__pupil" />
+                  <div class="cute-eye__shine" />
+                </div>
+              </div>
+            </div>
+            <p class="text-sm font-medium text-slate-400">拍一张照片，认识新汉字</p>
+          </div>
+
+          <!-- 上传/分析中：状态提示 -->
+          <div v-else-if="store.state === 'uploading' || store.state === 'analyzing'" class="flex flex-col items-center gap-4 text-center px-8">
+            <div class="relative size-20">
+              <div class="absolute inset-0 rounded-full border-4 border-primary/20" />
+              <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl text-primary">
+                  {{ store.state === 'uploading' ? 'cloud_upload' : 'auto_awesome' }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <p class="text-base font-bold text-slate-700 dark:text-slate-200">
+                {{ store.state === 'uploading' ? '正在上传图片...' : 'AI 正在识别中...' }}
+              </p>
+              <p v-if="store.state === 'analyzing'" class="text-xs text-slate-400 mt-1">请稍等，大眼睛在看呢</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 引导文字 -->
-      <div class="text-center">
-        <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">大眼睛看世界</h2>
-        <p class="text-sm font-medium text-slate-500 mt-1">拍一张照片，认识新汉字</p>
+      <div class="text-center py-8">
+        <p class="text-sm font-medium text-slate-500"></p>
       </div>
     </main>
 
@@ -42,90 +65,50 @@
       </div>
     </Transition>
 
-    <!-- 相机权限被拒提示 Modal -->
-    <Transition name="fade">
-      <div v-if="showPermissionDenied" class="fixed inset-0 z-30 flex items-end justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showPermissionDenied = false" />
-        <div class="relative w-full max-w-sm bg-surface dark:bg-bg-dark rounded-3xl p-6 shadow-2xl">
-          <span class="material-symbols-outlined text-4xl text-primary mb-3 block">photo_camera</span>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">需要相机权限</h3>
-          <p class="text-sm font-medium text-slate-500 mb-4">Zizi 需要大眼睛（相机)才能看世界哦，请在手机「设置 → 浏览器/Safari → 相机」中允许拍照权限。</p>
-          <button @click="showPermissionDenied = false" class="w-full h-12 rounded-full bg-primary text-slate-900 font-bold active:scale-95 transition-all duration-300">我知道了</button>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- 底部:拍照按钮 + Tab -->
-    <footer class="flex flex-col">
-      <!-- 拍照主按钮 -->
-      <div class="flex justify-center pb-4 px-6">
-        <!-- 隐藏的文件输入 -->
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept="image/*"
-          capture="environment"
-          class="hidden"
-          @change="handleFileChange"
-        />
-        <button
-          @click="triggerCamera"
-          :disabled="store.state === 'uploading' || store.state === 'analyzing'"
-          class="relative size-20 rounded-full bg-gradient-to-br from-primary to-primary-orange shadow-bubbly flex items-center justify-center transition-all duration-300 active:scale-90 disabled:opacity-50"
-        >
-          <div class="absolute inset-0 rounded-full bg-white/20 blur-sm" />
-          <span class="material-symbols-outlined text-4xl text-slate-900 relative z-10">photo_camera</span>
-        </button>
-      </div>
-      <BottomTab />
-    </footer>
-
-    <!-- 设置 Drawer -->
-    <SettingsDrawer v-model="showSettings" />
+    <!-- 浮动拍照按钮 -->
+    <div class="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none pb-6">
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        class="hidden"
+        @change="handleFileChange"
+      />
+      <button
+        @click="triggerCamera"
+        :disabled="store.state === 'uploading' || store.state === 'analyzing'"
+        class="pointer-events-auto relative size-20 rounded-full bg-gradient-to-br from-primary to-primary-orange shadow-bubbly flex items-center justify-center transition-all duration-300 active:scale-90 disabled:opacity-50"
+      >
+        <div class="absolute inset-0 rounded-full bg-white/20 blur-sm" />
+        <span class="material-symbols-outlined text-4xl text-slate-900 relative z-10">photo_camera</span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter, from 'vue-router'
-import { useRoute } from 'vue-router'
-import { AppHeader, BottomTab } from '@/shared/components'
-import SettingsDrawer from '@/features/settings/components/SettingsDrawer.vue'
-import { usePhotoWordStore } from '../store'
-import { useSettingsStore } from '@/features/settings/store'
-import { useLoadingStore } from '@/core/stores'
-import { uploadImage } from '@/shared/utils/upload'
-import { analyzeImage } from '../api'
-import type { AnalyzeResult } from '../api'
+import { useRouter, useRoute } from 'vue-router'
+import { usePhotoWord } from '../store'
 
 const router = useRouter()
 const route = useRoute()
-const store = usePhotoWordStore()
-const settingsStore = useSettingsStore()
-const loadingStore = useLoadingStore()
+const store = usePhotoWord()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
-const showSettings = ref(false)
-const showPermissionDenied = ref(false)
 const previewUrl = ref('')
 
-// ── 自动打开相机（从"继续玩"返回时）
 onMounted(() => {
   if (route.query.camera === '1') {
     triggerCamera()
   }
 })
 
-async function triggerCamera() {
+function triggerCamera() {
   store.reset()
   previewUrl.value = ''
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-    stream.getTracks().forEach(t => t.stop())
-    fileInputRef.value?.click()
-  } catch {
-    showPermissionDenied.value = true
-  }
+  fileInputRef.value?.click()
 }
 
 async function handleFileChange(e: Event) {
@@ -134,15 +117,78 @@ async function handleFileChange(e: Event) {
   input.value = ''
   if (!file) return
 
-  previewUrl.value = URL.createObjectURL(file)
-  try {
-    const imageUrl = await uploadImage(file)
-    const data = await analyzeImage(file, settingsStore.vocabLevel)
-    store.setResult(data)
+  await store.processImage(file)
+  if (store.state === 'result') {
     router.push('/photo-word/result')
-  } catch (err: unknown) {
-    const msg = (err as Error).message
-    store.setError(msg === 'upload_failed' ? '哎呀，图片没有传上去，请检查网络' : '大眼睛没看清楚呢，请换个角度再拍一张吧!')
   }
 }
+</script>
 
+<style scoped>
+.cute-eye {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cute-eye__sclera {
+  width: 64px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.cute-eye__iris {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #eecd2b 0%, #d4a912 50%, #8B6914 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cute-eye__pupil {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 45%, #1e1e1e 0%, #3a3a3a 100%);
+}
+
+.cute-eye__shine {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+.cute-eye__sclera::before,
+.cute-eye__sclera::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: #eee;
+}
+
+.cute-eye__sclera::before {
+  left: 0;
+  border-radius: 50% 0 0 50%;
+}
+
+.cute-eye__sclera::after {
+  right: 0;
+  border-radius: 0 50% 50% 0;
+}
+</style>

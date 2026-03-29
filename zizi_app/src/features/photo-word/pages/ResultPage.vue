@@ -113,6 +113,6 @@ function handleBack() {
 
 function handleContinue() {
   store.reset()
-  router.push('/')
+  router.push('/?camera=1')
 }
 </script>

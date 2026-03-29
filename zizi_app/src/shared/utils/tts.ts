@@ -1,7 +1,21 @@
 import { useSettingsStore } from '@/features/settings/store'
+import http from '@/core/http'
 
 /**
- * 播放音频：优先使用 MP3 URL，降级到浏览器 TTS
+ * 上传图片到后端， 返回本地文件 URL
+ * 适用于本地开发阶段，替代 OSS 直传
+ */
+export async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const { data } = await http.post<{ url: string }>('/upload/image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data.url
+}
+
+/**
+ * 播放音频： 优先使用 MP3 URL， 降级到浏览器 TTS
  */
 export async function playAudio(url: string, fallbackText: string): Promise<void> {
   if (url) {
@@ -14,6 +28,8 @@ export async function playAudio(url: string, fallbackText: string): Promise<void
   }
   return speakWithBrowser(fallbackText)
 }
+
+ }
 
 function speakWithBrowser(text: string): Promise<void> {
   return new Promise((resolve) => {
@@ -31,6 +47,8 @@ function speakWithBrowser(text: string): Promise<void> {
     }
     utter.onend   = () => resolve()
     utter.onerror = () => resolve()
+  })
     window.speechSynthesis.speak(utter)
+  }
   })
 }

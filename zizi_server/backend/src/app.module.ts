@@ -8,6 +8,7 @@ import { OssModule } from './oss/oss.module';
 import { PhotoWordModule } from './photo-word/photo-word.module';
 import { PictureBookModule } from './picture-book/picture-book.module';
 import { AdminModule } from './admin/admin.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AdminModule } from './admin/admin.module';
     PrismaModule,
     AuthModule,
     OssModule,
+    UploadModule,
     PhotoWordModule,
     PictureBookModule,
     AdminModule,

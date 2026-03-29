@@ -2,10 +2,10 @@
   <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
     <AppHeader title="我的绘本" :show-settings="true" @settings="showSettings = true" />
 
-    <!-- 有书状态 -->
+    <!-- Has books -->
     <main v-if="books.length > 0" class="flex-1 overflow-y-auto px-4 pt-2 pb-4">
       <div class="grid grid-cols-2 gap-4">
-        <!-- 添加新绘本卡片 -->
+        <!-- Add new book card -->
         <button
           @click="router.push('/books/capture')"
           class="aspect-[3/4] rounded-2xl border-2 border-dashed border-primary/40 flex flex-col items-center justify-center gap-2 bg-primary/5 transition-all duration-300 active:scale-95"
@@ -16,7 +16,7 @@
           <span class="text-sm font-bold text-slate-500">添加绘本</span>
         </button>
 
-        <!-- 绘本卡片列表 -->
+        <!-- Book card list -->
         <button
           v-for="book in books"
           :key="book.id"
@@ -36,13 +36,12 @@
       </div>
     </main>
 
-    <!-- 空状态 -->
+    <!-- Empty state -->
     <main v-else class="flex-1 flex flex-col items-center justify-center px-8 gap-6">
       <div class="relative">
         <div class="size-32 rounded-3xl bg-primary/10 flex items-center justify-center">
           <span class="material-symbols-outlined text-6xl text-primary/60">menu_book</span>
         </div>
-        <!-- 装饰星星 -->
         <span class="material-symbols-outlined absolute -top-2 -right-2 text-primary text-2xl">auto_awesome</span>
       </div>
       <div class="text-center">
@@ -58,7 +57,7 @@
       </button>
     </main>
 
-    <!-- 背景装饰 -->
+    <!-- Background decorations -->
     <div class="fixed pointer-events-none inset-0 z-[-1] overflow-hidden">
       <span class="material-symbols-outlined absolute top-1/4 left-[5%] text-slate-200 dark:text-slate-800 text-4xl">favorite</span>
       <span class="material-symbols-outlined absolute bottom-1/4 right-[8%] text-slate-200 dark:text-slate-800 text-6xl">draw</span>

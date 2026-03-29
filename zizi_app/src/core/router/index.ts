@@ -4,7 +4,7 @@ import { useAuthStore } from '@/features/auth/store'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // Auth — 公开路由
+    // Auth -- public routes
     {
       path: '/login',
       component: () => import('@/features/auth/pages/LoginPage.vue'),
@@ -20,7 +20,7 @@ const router = createRouter({
       component: () => import('@/features/auth/pages/ForgotPasswordPage.vue'),
       meta: { public: true }
     },
-    // Photo-word (里程碑 4)
+    // Photo-word
     {
       path: '/',
       component: () => import('@/features/photo-word/pages/HomePage.vue'),
@@ -29,8 +29,20 @@ const router = createRouter({
       path: '/photo-word/result',
       component: () => import('@/features/photo-word/pages/ResultPage.vue'),
     },
-    // Picture-book (里程碑 5 占位)
-    // { path: '/books', component: () => import('@/features/picture-book/pages/BookListPage.vue') },
+    // Picture-book routes
+    {
+      path: '/books',
+      component: () => import('@/features/picture-book/pages/BookListPage.vue'),
+    },
+    {
+      path: '/books/capture',
+      component: () => import('@/features/picture-book/pages/CapturePage.vue'),
+    },
+    {
+      path: '/books/:id',
+      component: () => import('@/features/picture-book/pages/BookPlaybackPage.vue'),
+    },
+    // Catch-all redirect
     {
       path: '/:pathMatch(.*)*',
       redirect: '/'
@@ -38,7 +50,7 @@ const router = createRouter({
   ]
 })
 
-// 路由守卫：未登录强制跳转 /login
+// Route guard: force redirect to /login when not logged in
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (!to.meta.public && !auth.isLoggedIn) {

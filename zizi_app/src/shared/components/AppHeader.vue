@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between px-5 pt-5 pb-3">
-    <!-- 左侧：返回按钮或占位 -->
+    <!-- Left: back button or spacer -->
     <div class="w-11">
       <button
         v-if="showBack"
@@ -12,13 +12,15 @@
       </button>
     </div>
 
-    <!-- 中间：标题 -->
-    <h1 v-if="title" class="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-wide">
-      {{ title }}
-    </h1>
-    <div v-else />
+    <!-- Center: title (slot or prop) -->
+    <slot name="title">
+      <h1 v-if="title" class="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-wide truncate">
+        {{ title }}
+      </h1>
+      <div v-else />
+    </slot>
 
-    <!-- 右侧：齿轮或占位 -->
+    <!-- Right: settings gear or spacer -->
     <div class="w-11">
       <button
         v-if="showSettings"

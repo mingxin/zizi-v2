@@ -43,3 +43,4 @@ zizi_app/node_modules/
 # Server specific
 zizi_server/backend/dist/
 zizi_server/backend/node_modules/
+zizi_server/backend/uploads/

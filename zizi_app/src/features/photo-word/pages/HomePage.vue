@@ -49,13 +49,13 @@
         <div class="relative w-full max-w-sm bg-surface dark:bg-bg-dark rounded-3xl p-6 shadow-2xl">
           <span class="material-symbols-outlined text-4xl text-primary mb-3 block">photo_camera</span>
           <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">需要相机权限</h3>
-          <p class="text-sm font-medium text-slate-500 mb-4">Zizi 需要大眼睛（相机）才能看世界哦，请在手机「设置 → 浏览器/Safari → 相机」中允许拍照权限。</p>
+          <p class="text-sm font-medium text-slate-500 mb-4">Zizi 需要大眼睛（相机)才能看世界哦，请在手机「设置 → 浏览器/Safari → 相机」中允许拍照权限。</p>
           <button @click="showPermissionDenied = false" class="w-full h-12 rounded-full bg-primary text-slate-900 font-bold active:scale-95 transition-all duration-300">我知道了</button>
         </div>
       </div>
     </Transition>
 
-    <!-- 底部：拍照按钮 + Tab -->
+    <!-- 底部:拍照按钮 + Tab -->
     <footer class="flex flex-col">
       <!-- 拍照主按钮 -->
       <div class="flex justify-center pb-4 px-6">
@@ -86,38 +86,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, from 'vue-router'
+import { useRoute } from 'vue-router'
 import { AppHeader, BottomTab } from '@/shared/components'
 import SettingsDrawer from '@/features/settings/components/SettingsDrawer.vue'
 import { usePhotoWordStore } from '../store'
+import { useSettingsStore } from '@/features/settings/store'
+import { useLoadingStore } from '@/core/stores'
+import { uploadImage } from '@/shared/utils/upload'
+import { analyzeImage } from '../api'
+import type { AnalyzeResult } from '../api'
 
 const router = useRouter()
-const store  = usePhotoWordStore()
+const route = useRoute()
+const store = usePhotoWordStore()
+const settingsStore = useSettingsStore()
+const loadingStore = useLoadingStore()
 
-const fileInputRef         = ref<HTMLInputElement | null>(null)
-const showSettings         = ref(false)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+const showSettings = ref(false)
 const showPermissionDenied = ref(false)
+const previewUrl = ref('')
 
-function triggerCamera() {
+// ── 自动打开相机（从"继续玩"返回时）
+onMounted(() => {
+  if (route.query.camera === '1') {
+    triggerCamera()
+  }
+})
+
+async function triggerCamera() {
   store.reset()
-  fileInputRef.value?.click()
+  previewUrl.value = ''
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    stream.getTracks().forEach(t => t.stop())
+    fileInputRef.value?.click()
+  } catch {
+    showPermissionDenied.value = true
+  }
 }
 
 async function handleFileChange(e: Event) {
   const input = e.target as HTMLInputElement
-  const file  = input.files?.[0]
-  input.value = '' // 允许重复选同一张图
+  const file = input.files?.[0]
+  input.value = ''
   if (!file) return
 
-  await store.processImage(file)
-  if (store.state === 'result') {
+  previewUrl.value = URL.createObjectURL(file)
+  try {
+    const imageUrl = await uploadImage(file)
+    const data = await analyzeImage(file, settingsStore.vocabLevel)
+    store.setResult(data)
     router.push('/photo-word/result')
+  } catch (err: unknown) {
+    const msg = (err as Error).message
+    store.setError(msg === 'upload_failed' ? '哎呀，图片没有传上去，请检查网络' : '大眼睛没看清楚呢，请换个角度再拍一张吧!')
   }
 }
-</script>
 
-<style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-</style>

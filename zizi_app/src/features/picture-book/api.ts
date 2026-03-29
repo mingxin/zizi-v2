@@ -17,25 +17,31 @@ export interface Book {
   pages?:    BookPage[]
 }
 
-/** 获取绘本列表 */
+/** Fetch picture-book list */
 export async function fetchBooks(): Promise<Book[]> {
   const { data } = await http.get<Book[]>('/picture-book')
   return data
 }
 
-/** 获取单本绘本（含分页） */
+/** Fetch single book with pages */
 export async function fetchBook(id: number): Promise<Book> {
   const { data } = await http.get<Book>(`/picture-book/${id}`)
   return data
 }
 
-/** 批量上传页面图片并生成故事 */
+/** Batch-upload page images and generate story */
 export async function createBook(imageUrls: string[]): Promise<Book> {
   const { data } = await http.post<Book>('/picture-book', { imageUrls })
   return data
 }
 
-/** 获取绘本的专用分享 URL（用于写入 NFC） */
+/** Update book title */
+export async function updateBookTitle(id: number, title: string): Promise<Book> {
+  const { data } = await http.patch<Book>(`/picture-book/${id}`, { title })
+  return data
+}
+
+/** Get dedicated NFC share URL for a book */
 export function getBookNfcUrl(bookId: number): string {
   return `${window.location.origin}/books/${bookId}?autoplay=1`
 }

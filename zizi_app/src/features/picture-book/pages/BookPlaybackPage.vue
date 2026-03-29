@@ -1,13 +1,31 @@
 <template>
   <div class="relative flex flex-col h-dvh bg-bg-light dark:bg-bg-dark overflow-hidden">
-    <!-- Header -->
+    <!-- Header with editable title -->
     <AppHeader
       :title="book?.title ?? ''"
       :show-back="true"
       @back="router.push('/books')"
-    />
+    >
+      <template #title>
+        <div v-if="editingTitle" class="flex items-center gap-2 flex-1 min-w-0">
+          <input
+            ref="titleInputRef"
+            v-model="draftTitle"
+            class="flex-1 min-w-0 h-10 px-3 rounded-xl bg-white/80 dark:bg-white/10 border-2 border-primary text-sm font-bold text-slate-900 dark:text-slate-100 outline-none"
+            maxlength="100"
+            @keydown.enter="saveTitle"
+            @keydown.escape="cancelEditTitle"
+            @blur="saveTitle"
+          />
+        </div>
+        <div v-else class="flex items-center gap-1 cursor-pointer" @click="startEditTitle">
+          <span class="text-base font-bold truncate max-w-[50vw]">{{ book?.title ?? '' }}</span>
+          <span class="material-symbols-outlined text-base text-slate-400">edit</span>
+        </div>
+      </template>
+    </AppHeader>
 
-    <!-- 3D Swiper 区域 -->
+    <!-- 3D Swiper area -->
     <main
       ref="swiperRef"
       class="flex-1 flex items-center overflow-x-auto snap-x snap-mandatory hide-scrollbar px-[10vw] gap-6"
@@ -24,7 +42,7 @@
       >
         <div class="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30 relative">
           <img :src="page.imageUrl" class="w-full h-full object-cover" :alt="`第${page.pageNum}页`" />
-          <!-- 故事文字叠层（当前页显示） -->
+          <!-- Story text overlay (current page only) -->
           <Transition name="story">
             <div
               v-if="idx === currentIndex && page.story"
@@ -37,9 +55,9 @@
       </div>
     </main>
 
-    <!-- Footer：页码指示 + 连播控制 -->
+    <!-- Footer: page indicators + playback controls -->
     <footer class="flex flex-col items-center gap-4 pb-8 pt-4">
-      <!-- 页码点 -->
+      <!-- Page dots -->
       <div class="flex items-center gap-2">
         <div
           v-for="(_, idx) in pages"
@@ -51,9 +69,9 @@
         />
       </div>
 
-      <!-- 控制按钮行 -->
+      <!-- Control buttons row -->
       <div class="flex items-center gap-4">
-        <!-- NFC 复制链接 -->
+        <!-- NFC copy link -->
         <button
           @click="copyNfcUrl"
           class="size-12 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-sm shadow-float flex items-center justify-center transition-all duration-300 active:scale-95"
@@ -64,7 +82,7 @@
           </span>
         </button>
 
-        <!-- 暂停/连播按钮 -->
+        <!-- Play/Pause button -->
         <button
           @click="toggleAutoplay"
           class="size-14 rounded-full flex items-center justify-center shadow-xl border border-white/40 transition-all duration-300 active:scale-95"
@@ -73,12 +91,12 @@
           <span class="material-symbols-outlined text-3xl">{{ autoplay ? 'pause' : 'play_arrow' }}</span>
         </button>
 
-        <!-- 占位（对称用） -->
+        <!-- Spacer for symmetry -->
         <div class="size-12" />
       </div>
     </footer>
 
-    <!-- 背景光晕 -->
+    <!-- Background glow -->
     <div class="absolute inset-0 -z-10 pointer-events-none">
       <div class="absolute top-[-10%] right-[-10%] w-1/2 h-1/2 bg-primary/10 rounded-full blur-[100px]" />
       <div class="absolute bottom-[-10%] left-[-10%] w-1/2 h-1/2 bg-blue-200/20 rounded-full blur-[100px]" />
@@ -87,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { AppHeader } from '@/shared/components'
 import { useBookStore } from '../store'
@@ -106,26 +124,70 @@ const autoplay     = ref(false)
 const nfcCopied    = ref(false)
 const isPlaying    = ref(false)
 
+// ── Title editing state ─────────────────────────────────────
+const editingTitle   = ref(false)
+const draftTitle     = ref('')
+const titleInputRef  = ref<HTMLInputElement | null>(null)
+const savingTitle    = ref(false)
+
+function startEditTitle() {
+  if (!book.value) return
+  draftTitle.value = book.value.title
+  editingTitle.value = true
+  nextTick(() => {
+    titleInputRef.value?.focus()
+    titleInputRef.value?.select()
+  })
+}
+
+async function saveTitle() {
+  if (!editingTitle.value) return
+  const newTitle = draftTitle.value.trim()
+  if (!newTitle || !book.value) {
+    cancelEditTitle()
+    return
+  }
+  // No change
+  if (newTitle === book.value.title) {
+    editingTitle.value = false
+    return
+  }
+  if (savingTitle.value) return
+  savingTitle.value = true
+  try {
+    await store.editBookTitle(book.value.id, newTitle)
+  } catch {
+    // Silently fail, keep original title
+  } finally {
+    savingTitle.value = false
+    editingTitle.value = false
+  }
+}
+
+function cancelEditTitle() {
+  editingTitle.value = false
+}
+
 const pages = computed(() => book.value?.pages ?? [])
 
-// ── 加载数据 ────────────────────────────────────────────────
+// ── Load data ────────────────────────────────────────────────
 onMounted(async () => {
   const id = Number(route.params.id)
   await store.loadBook(id)
 
-  // NFC autoplay=1 参数：自动启动连播
+  // NFC autoplay=1 param: auto-start playback
   if (route.query.autoplay === '1') {
     autoplay.value = true
     playCurrentPage()
   }
 })
 
-// ── 滚动防抖（0.5s 后播放当前页）────────────────────────────
+// ── Scroll debounce (play current page after 0.5s) ──────────
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function handleScroll() {
   if (debounceTimer) clearTimeout(debounceTimer)
-  // 更新 currentIndex
+  // Update currentIndex
   const el = swiperRef.value
   if (el) {
     const idx = Math.round(el.scrollLeft / el.offsetWidth)
@@ -137,7 +199,7 @@ function handleScroll() {
   debounceTimer = setTimeout(() => playCurrentPage(), 500)
 }
 
-// ── 用户触摸时退出自动连播 ───────────────────────────────────
+// ── Exit autoplay on user touch ──────────────────────────────
 function handleTouchStart() {
   if (autoplay.value) {
     autoplay.value = false
@@ -145,7 +207,7 @@ function handleTouchStart() {
   }
 }
 
-// ── 音频控制 ─────────────────────────────────────────────────
+// ── Audio control ────────────────────────────────────────────
 let currentAudio: HTMLAudioElement | null = null
 
 function stopCurrentAudio() {
@@ -177,7 +239,7 @@ async function playCurrentPage() {
   } finally {
     isPlaying.value = false
     currentAudio = null
-    // 自动连播：播完自动翻下一页
+    // Autoplay: advance to next page after finishing
     if (autoplay.value) advanceAutoplay()
   }
 }
@@ -189,7 +251,7 @@ function advanceAutoplay() {
     autoplay.value = false
     return
   }
-  // 滚动到下一页
+  // Scroll to next page
   const el = swiperRef.value
   if (el) {
     el.scrollTo({ left: next * el.offsetWidth, behavior: 'smooth' })
@@ -207,7 +269,7 @@ function toggleAutoplay() {
   }
 }
 
-// ── NFC URL 复制 ─────────────────────────────────────────────
+// ── NFC URL copy ─────────────────────────────────────────────
 async function copyNfcUrl() {
   if (!book.value) return
   const url = getBookNfcUrl(book.value.id)
